@@ -85,11 +85,11 @@
                 <div>
                   <label style="margin-right:3%;">
                     <input name="sentiment" type="radio" value="positive" checked />
-                    <span>Positive</span>
+                    <span>Positive <i class="material-icons left"> sentiment_very_satisfied </i></span>
                   </label>
                   <label>
                     <input name="sentiment" type="radio" value="negative" />
-                    <span>Negative</span>
+                    <span>Negative <i class="material-icons left"> sentiment_dissatisfied </i></span>
                   </label>
                 </div>
                 <input type="submit" class="right waves-effect red darken-2 waves-dark btn" id="create-review" value="Create Review" formmethod="post" formaction="{{url_for('review_views.create_review_page', student_id=selected_student.id)}}">
