@@ -106,7 +106,11 @@
           </section>
         {% else %}
           {% for review in selected_student.reviews: %}
-          <a class="black-text" href="{{url_for('review_views.votes_log_page', review_id=review.id)}}">
+          {%if current_user.is_admin()%}
+            <a class="black-text" href="{{url_for('review_views.votes_log_page', review_id=review.id)}}">
+          {%else%}
+            <a class="black-text" href="">
+          {%endif%}
             <div class="card review-card">
               <div class="card-content">
                 <h5> {{review.text}} </h5> 
