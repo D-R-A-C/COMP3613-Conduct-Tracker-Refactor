@@ -100,7 +100,7 @@ def logout():
   return redirect(url_for('user_views.login')) 
 
 
-# Get all users route
+# List Users --> Get all users route
 # Must be an admin to access this route
 @user_views.route("/api/users", methods=["GET"])
 @jwt_required()
