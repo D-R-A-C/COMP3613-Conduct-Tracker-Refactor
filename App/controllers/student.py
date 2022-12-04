@@ -13,8 +13,8 @@ def create_student(firstName, lastName, programme, faculty):
 
 
 # Gets a student by their name
-def get_students_by_name(name):
-    return Student.query.filter_by(name=name).all()
+def get_students_by_name(firstName, lastName):
+    return Student.query.filter_by(firstName=firstName, lastName=lastName).all()
 
 
 # Gets a student by their id
