@@ -29,7 +29,13 @@ class User(db.Model, UserMixin):
         return self.access >= access_level
 
     def to_json(self):
-        return {"id": self.id, "firstName": self.firstName, "lastName": self.lastName, "email": self.email, "access": self.access}
+        return {
+                "id": self.id,
+                "firstName": self.firstName,
+                "lastName": self.lastName,
+                "email": self.email,
+                "access": self.access
+                }
 
     def set_password(self, password):
         """Create hashed password."""
