@@ -32,8 +32,7 @@ from App.controllers.review import (
     get_review_json,
     get_all_reviews,
     get_all_reviews_json,
-    upvote_review,
-    downvote_review,
+    vote_review
 )
 
 from wsgi import app
@@ -315,10 +314,10 @@ class ReviewIntegrationTests(unittest.TestCase):
 
     def test_upvote_review(self):
         test_review = create_review(1, 1, "good")
-        upvote_review(test_review.id, 1)
+        vote_review(test_review.id, 1)
         assert get_review(test_review.id).get_num_upvotes() == 1
 
     def test_downvote_review(self):
         test_review = create_review(1, 1, "good")
-        downvote_review(test_review.id, 1)
+        vote_review(test_review.id, 1)
         assert get_review(test_review.id).get_num_downvotes() == 1
