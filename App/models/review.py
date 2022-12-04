@@ -26,7 +26,7 @@ class Review(db.Model):
             "id": self.id,
             "staff_id": self.staff_id,
             "student_id": self.student_id,
-            "timestamp": self.timestamp.strftime("%d/%m/%Y %H:%M")[:-3],
+            "timestamp": self.timestamp.strftime("%d/%m/%Y %H:%M"),
             "sentiment":self.sentiment,
             "text": self.text,
             "num_upvotes": self.get_num_upvotes(),
