@@ -99,6 +99,7 @@ def logout():
   flash('Logged Out!')
   return redirect(url_for('user_views.login')) 
 
+
 # Get all users route
 # Must be an admin to access this route
 @user_views.route("/api/users", methods=["GET"])

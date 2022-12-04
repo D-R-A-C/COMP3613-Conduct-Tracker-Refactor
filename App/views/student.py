@@ -31,6 +31,7 @@ def create_student_action():
         return jsonify({"error": "student not created"}), 400
     return jsonify({"error": "unauthorized"}), 401
 
+
 # Add student page
 # Must be an admin to access this route
 @student_views.route("/students/new", methods=["POST", "GET"])
@@ -140,10 +141,11 @@ def get_student_action(student_id):
 
 
 # Gets a student given their name
-@student_views.route("/api/students/name/<string:name>", methods=["GET"])
+@student_views.route("/api/students/name", methods=["GET"])
 @jwt_required()
-def get_student_by_name_action(name):
-    students = get_students_by_name(name)
+def get_student_by_name_action():
+    data = request.json
+    students = get_students_by_name(data["firstName"], data["lastName"])
     if students:
         return jsonify([student.to_json() for student in students]), 200
     return jsonify({"error": "student not found"}), 404
