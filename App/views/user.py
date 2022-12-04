@@ -149,6 +149,19 @@ def get_user_page():
     return render_template("admin-users.html", users=users)
 
 
+# Get user by access level route
+# Must be an admin to access this route
+@user_views.route("/api/users/access/<int:access_level>", methods=["GET"])
+@jwt_required()
+def get_user_by_access_action(access_level):
+    if not current_identity.is_admin():
+        return jsonify({"message": "Access denied"}), 403
+    users = get_users_by_access(access_level)
+    if users:
+        return jsonify([user.to_json() for user in users]), 200
+    return jsonify({"message": "No users found"}), 404
+
+
 # Delete user route
 # Must be an admin to access this route
 @user_views.route("/api/users/<int:user_id>", methods=["DELETE"])
@@ -176,15 +189,3 @@ def delete_user_page(user_id):
             return render_template("admin-users.html", users=get_all_users(), selected_user=user)
     return render_template("admin-users.html", users=get_all_users(), selected_user=None)
 
-
-# Get user by access level route
-# Must be an admin to access this route
-@user_views.route("/api/users/access/<int:access_level>", methods=["GET"])
-@jwt_required()
-def get_user_by_access_action(access_level):
-    if not current_identity.is_admin():
-        return jsonify({"message": "Access denied"}), 403
-    users = get_users_by_access(access_level)
-    if users:
-        return jsonify([user.to_json() for user in users]), 200
-    return jsonify({"message": "No users found"}), 404
