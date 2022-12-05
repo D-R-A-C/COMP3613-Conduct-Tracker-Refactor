@@ -41,7 +41,7 @@ def get_all_student_reviews(id):
     student = Student.query.get(id)
     if not student:
         return {"error": "student not found"}, 404
-    return [review.to_json() for review in student.reviews], 200
+    return [review.to_json() for review in student.reviews]
 
 
 # Updates a student given their id, name, programme and faculty
