@@ -49,6 +49,7 @@ def create_student_page():
                 flash("student not created")
     return render_template("add-student.html", student=None, data=None)
 
+
 # Updates student given student id, name, programme and faculty
 # Must be an admin to access this route
 @student_views.route("/api/students/<int:student_id>", methods=["PUT"])
