@@ -126,8 +126,9 @@ def search_student_page():
         return render_template("index.html", students=students, selected_student="")
     except ValueError:
         # search by name
-        name = data["keyword"]
-        students = get_students_by_name(name)
+        name = data["keyword"].split(' ')
+        if len(name)==2:
+            students = get_students_by_name(name[0], name[1])
         return render_template("index.html", students=students, selected_student="")
 
 
