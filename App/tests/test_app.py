@@ -223,10 +223,12 @@ class StudentIntegrationTests(unittest.TestCase):
         assert test_student.firstName == student.firstName
 
     def test_get_students_by_name(self):
+        test_student = create_student("bob", "jones", "cs","fst")
         students = get_students_by_name("bob", "jones")
         assert students[0].firstName == "bob" and students[0].lastName == "jones"
 
     def test_get_all_students_json(self):
+        test_student = create_student("bob", "jones", "cs","fst")
         students = get_all_students()
         students_json = get_all_students_json()
         assert students_json == [student.to_json() for student in students]
