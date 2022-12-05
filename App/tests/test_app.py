@@ -4,7 +4,7 @@ import datetime
 
 from App.main import create_app
 from App.database import create_db
-from App.models import User, Student, Review, Vote
+from App.models import *
 from App.controllers.auth import authenticate
 from App.controllers.user import (
     create_user,
@@ -174,125 +174,126 @@ def empty_db():
     app.config.update({"TESTING": True, "SQLALCHEMY_DATABASE_URI": "sqlite:///test.db"})
     create_db(app)
     yield app.test_client()
-    # os.unlink(os.getcwd() + "/App/test.db")
+    os.unlink(os.getcwd() + "/App/test.db")
 
 
 # Integration tests for User model
-class UsersIntegrationTests(unittest.TestCase):
+class UsersIntegrationTests(unittest.TestCase):    
     def test_authenticate(self):
-        user = create_user("bob", "bobpass")
-        assert authenticate("bob", "bobpass") is not None
+        test_user = create_user("bob@mail.com", "bobpass", "bob", "jones", 1)
+        assert authenticate(test_user.email, "bobpass") != None
 
     def test_create_admin(self):
-        test_admin = create_user("rick", "rickpass", 2)
-        admin = get_user_by_email("rick@rickpass")
-        assert test_admin.username == admin.username and test_admin.is_admin()
+        test_admin = create_user("rick@mail.com", "rickpass", "rick", "smith", 2)
+        assert test_admin.email == "rick@mail.com" and test_admin.is_admin()
 
     def test_create_user(self):
-        test_user = create_user("john", "johnpass", 1)
-        user = get_user_by_email("john@mail.com")
-        assert user.username == "john" and not user.is_admin()
-
+        test_user = create_user("john@mail.com", "johnpass", "john", "doe", 1)
+        assert test_user.email == "john@mail.com" and not test_user.is_admin()
+        
     def test_get_user(self):
-        test_user = create_user("johnny", "johnpass", 1)
+        test_user = create_user("johnny@mail.com", "johnnypass", "johnny", "kim", 1)
         user = get_user(test_user.id)
-        assert test_user.username == user.username
+        assert test_user.email == user.email
 
     def test_get_all_users_json(self):
+        test_user = create_user("james@mail.com", "pass", "james", "doe", 1)
+        test_admin = create_user("ricky@mail.com", "rickypass", "ricky", "smith", 2)
         users = get_all_users()
         users_json = get_all_users_json()
         assert users_json == [user.to_json() for user in users]
 
     def test_update_user(self):
-        user = create_user("danny", "johnpass", 1)
-        update_user(user.id, "daniel")
-        assert get_user(user.id).username == "daniel"
+        user = create_user("danny@mail.com", "dannypass", "danny", "lee", 1)
+        update_user(user.id, "dan@mail.com",)
+        assert get_user(user.id).email == "dan@mail.com"
 
     def test_delete_user(self):
-        user = create_user("bobby", "bobbypass", 1)
+        user = create_user("bobby@mail.com", "bobbypass", "bobby", "park", 1)
         uid = user.id
         delete_user(uid)
         assert get_user(uid) is None
 
 
-# # Integration tests for Student model
-# class StudentIntegrationTests(unittest.TestCase):
-#     def test_create_student(self):
-#         test_student = create_student("bob", "fst", "cs")
-#         student = get_student(test_student.id)
-#         assert test_student.name == student.name
+# Integration tests for Student model
+class StudentIntegrationTests(unittest.TestCase):
+    def test_create_student(self):
+        test_student = create_student("bob", "jones", "cs","fst")
+        student = get_student(test_student.id)
+        assert test_student.firstName == student.firstName
 
-#     def test_get_students_by_name(self):
-#         students = get_students_by_name("bob")
-#         assert students[0].name == "bob"
+    def test_get_students_by_name(self):
+        students = get_students_by_name("bob", "jones")
+        assert students[0].firstName == "bob" and students[0].lastName == "jones"
 
-#     def test_get_all_students_json(self):
-#         students = get_all_students()
-#         students_json = get_all_students_json()
-#         assert students_json == [student.to_json() for student in students]
+    def test_get_all_students_json(self):
+        students = get_all_students()
+        students_json = get_all_students_json()
+        assert students_json == [student.to_json() for student in students]
 
-#     # tests updating a student's name, programme and/or faculty
-#     def test_update_student(self):
-#         with self.subTest("Update name"):
-#             student = create_student("bob", "fst", "cs")
-#             update_student(student.id, "bobby")
-#             assert get_student(student.id).name == "bobby"
-#         with self.subTest("Update programme"):
-#             student = create_student("bob", "fst", "cs")
-#             update_student(student.id, programme="it")
-#             assert get_student(student.id).programme == "it"
-#         with self.subTest("Update faculty"):
-#             student = create_student("bob", "fst", "cs")
-#             update_student(student.id, faculty="fss")
-#             assert get_student(student.id).faculty == "fss"
-#         with self.subTest("Update all"):
-#             student = create_student("bob", "fst", "cs")
-#             update_student(student.id, "bobby", "it", "fss")
-#             assert get_student(student.id).name == "bobby"
-#             assert get_student(student.id).programme == "it"
-#             assert get_student(student.id).faculty == "fss"
+    # tests updating a student's name, programme and/or faculty
+    def test_update_student(self):
+        student = create_student("bob", "jones", "cs", "fst")
+        update_student(student.id, "bobby", "joseph", "it", "fst")
+        assert get_student(student.id).firstName == "bobby"
+        assert get_student(student.id).lastName == "joseph"
+        assert get_student(student.id).programme == "it"
+        assert get_student(student.id).faculty == "fst"
 
-#     def test_delete_student(self):
-#         student = create_student("bob", "fst", "cs")
-#         sid = student.id
-#         delete_student(sid)
-#         assert get_student(sid) is None
+    def test_delete_student(self):
+        student = create_student("bob", "jones", "fst", "cs")
+        sid = student.id
+        delete_student(sid)
+        assert get_student(sid) is None
 
 
-# # Integration tests for Review model
-# class ReviewIntegrationTests(unittest.TestCase):
-#     def test_create_review(self):
-#         test_review = create_review(1, 1, "good")
-#         review = get_review(test_review.id)
-#         assert test_review.text == review.text
+# Integration tests for Review model
+class ReviewIntegrationTests(unittest.TestCase):
+    def test_create_review(self):
+        admin = create_user("dave@mail.com", "davepass", "dave", "lee", 2)
+        student = create_student("bob", "jones", "cs", "fst")
+        test_review = create_review(admin.id, student.id, "positive", "good")
+        review = get_review(test_review.id)
+        assert test_review.text == review.text
 
-#     def test_update_review(self):
-#         test_review = create_review(1, 1, "good")
-#         update_review(test_review.id, "bad")
-#         assert get_review(test_review.id).text == "bad"
+    def test_update_review(self):
+        admin = create_user("davey@mail.com", "davepass", "davey", "singh", 2)
+        student = create_student("bob", "jones", "cs", "fst")
+        test_review = create_review(admin.id, student.id, "positive", "good")
+        test_review = update_review(test_review.id, "negative", "bad")
+        assert test_review.text == "bad"
 
-#     def test_delete_review(self):
-#         test_review = create_review(1, 1, "good")
-#         rid = test_review.id
-#         delete_review(rid)
-#         assert get_review(rid) is None
+    def test_delete_review(self):
+        admin = create_user("sunny@mail.com", "pass", "sunny", "singh", 2)
+        student = create_student("bob", "jones", "cs", "fst")
+        test_review = create_review(admin.id, student.id, "positive", "good")
+        assert delete_review(test_review.id) ==True
 
-#     def test_get_review_json(self):
-#         test_review = create_review(1, 1, "good")
-#         review_json = get_review_json(test_review.id)
-#         assert review_json == test_review.to_json()
+    def test_get_review_json(self):
+        admin = create_user("darrius@mail.com", "pass", "darrius", "doe", 2)
+        student = create_student("bob", "jones", "cs", "fst")
+        test_review = create_review(admin.id, student.id, "positive", "good")
+        review_json = get_review_json(test_review.id)
+        assert review_json == test_review.to_json()
 
-#     def test_get_all_reviews_json(self):
-#         reviews = get_all_reviews()
-#         reviews_json = get_all_reviews_json()
-#         assert reviews_json == [review.to_json() for review in reviews]
+    def test_get_all_reviews_json(self):
+        admin = create_user("donald@mail.com", "donald", "donald", "richards", 2)
+        student = create_student("bob", "jones", "cs", "fst")
+        reviews = get_all_reviews()
+        reviews_json = get_all_reviews_json()
+        assert reviews_json == [review.to_json() for review in reviews]
 
-#     def test_upvote_review(self):
-#         test_review = create_review(1, 1, "good")
-#         vote_review(test_review.id, 1)
-#         assert get_review(test_review.id).get_num_upvotes() == 1
+    def test_upvote_review(self):
+        user = create_user("dani@mail.com", "dani", "dani", "rampersad", 2)
+        student = create_student("bob", "jones", "cs", "fst")
+        test_review = create_review(user.id, student.id, "positive", "good")
+        test_review = vote_review(test_review.id, user.id, "up")
+        assert test_review.get_num_upvotes() == 1
 
-#     def test_downvote_review(self):
-#         test_review = create_review(1, 1, "good")
-#         vote_review(test_review.id, 1)
-#         assert get_review(test_review.id).get_num_downvotes() == 1
+    def test_downvote_review(self):
+        user = create_user("darla@mail.com", "pass", "darla", "jenkins", 2)
+        student = create_student("bob", "jones", "cs", "fst")
+        test_review = create_review(user.id, student.id, "positive", "good")
+        test_review = vote_review(test_review.id, user.id, "down")
+        assert test_review.get_num_downvotes() == 1
+
